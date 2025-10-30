@@ -1,0 +1,123 @@
+-- ===============================
+-- 1. CLIENTS TABLE
+-- ===============================
+CREATE TABLE Clients (
+    ClientID AUTOINCREMENT PRIMARY KEY,
+    ClientName TEXT(100),
+    ContactPerson TEXT(100),
+    Email TEXT(100),
+    Phone TEXT(50),
+    Address MEMO,
+    DateAdded DATETIME,
+    Notes MEMO
+);
+
+-- ===============================
+-- 2. PROJECT_STATUS TABLE
+-- ===============================
+CREATE TABLE Project_Status (
+    StatusID AUTOINCREMENT PRIMARY KEY,
+    StatusName TEXT(50)
+);
+
+-- ===============================
+-- 3. TASK_STATUS TABLE
+-- ===============================
+CREATE TABLE Task_Status (
+    StatusID AUTOINCREMENT PRIMARY KEY,
+    StatusName TEXT(50)
+);
+
+-- ===============================
+-- 4. DEPARTMENTS TABLE
+-- ===============================
+CREATE TABLE Departments (
+    DepartmentID AUTOINCREMENT PRIMARY KEY,
+    DepartmentName TEXT(100),
+    Description MEMO
+);
+
+-- ===============================
+-- 5. EMPLOYEES TABLE
+-- ===============================
+CREATE TABLE Employees (
+    EmployeeID AUTOINCREMENT PRIMARY KEY,
+    FirstName TEXT(50),
+    LastName TEXT(50),
+    Email TEXT(100),
+    Phone TEXT(50),
+    DepartmentID LONG,
+    JobTitle TEXT(100),
+    HireDate DATETIME,
+    IsActive YESNO,
+    CONSTRAINT FK_Employees_Department
+        FOREIGN KEY (DepartmentID)
+        REFERENCES Departments (DepartmentID)
+);
+
+-- ===============================
+-- 6. PROJECTS TABLE
+-- ===============================
+CREATE TABLE Projects (
+    ProjectID AUTOINCREMENT PRIMARY KEY,
+    ClientID LONG,
+    ProjectName TEXT(150),
+    Description MEMO,
+    StartDate DATETIME,
+    EndDate DATETIME,
+    Budget CURRENCY,
+    StatusID LONG,
+    Priority TEXT(20),
+    CreatedBy LONG,
+    DateCreated DATETIME,
+    CONSTRAINT FK_Projects_Client
+        FOREIGN KEY (ClientID)
+        REFERENCES Clients (ClientID),
+    CONSTRAINT FK_Projects_Status
+        FOREIGN KEY (StatusID)
+        REFERENCES Project_Status (StatusID)
+);
+
+-- ===============================
+-- 7. TASKS TABLE
+-- ===============================
+CREATE TABLE Tasks (
+    TaskID AUTOINCREMENT PRIMARY KEY,
+    ProjectID LONG,
+    AssignedTo LONG,
+    TaskName TEXT(150),
+    Description MEMO,
+    StartDate DATETIME,
+    DueDate DATETIME,
+    CompletionDate DATETIME,
+    StatusID LONG,
+    Progress BYTE,
+    Priority TEXT(20),
+    Remarks MEMO,
+    CONSTRAINT FK_Tasks_Project
+        FOREIGN KEY (ProjectID)
+        REFERENCES Projects (ProjectID),
+    CONSTRAINT FK_Tasks_Employee
+        FOREIGN KEY (AssignedTo)
+        REFERENCES Employees (EmployeeID),
+    CONSTRAINT FK_Tasks_Status
+        FOREIGN KEY (StatusID)
+        REFERENCES Task_Status (StatusID)
+);
+
+-- ===============================
+-- 8. PROJECT_EMPLOYEES (Junction Table)
+-- ===============================
+CREATE TABLE Project_Employees (
+    ProjectEmployeeID AUTOINCREMENT PRIMARY KEY,
+    ProjectID LONG,
+    EmployeeID LONG,
+    Role TEXT(100),
+    AssignedDate DATETIME,
+    CONSTRAINT FK_ProjectEmp_Project
+        FOREIGN KEY (ProjectID)
+        REFERENCES Projects (ProjectID),
+    CONSTRAINT FK_ProjectEmp_Employee
+        FOREIGN KEY (EmployeeID)
+        REFERENCES Employees (EmployeeID)
+);
